@@ -37,6 +37,7 @@ class ToDoListViewModel extends ViewModel {
       notifyListeners();
       return response;
     } catch (exec) {
+      // ignore: avoid_print
       print('Error in fetchToDoListData: ${exec.toString()}');
       rethrow;
     }

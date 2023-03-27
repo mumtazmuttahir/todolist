@@ -67,8 +67,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   //Deletes the task
   void deleteTask(int index) {
     setState(() {
-      // ignore: list_remove_unrelated_type
-      toDoTileModels.remove(index);
+      toDoTileModels.removeAt(index);
     });
   }
 
@@ -111,7 +110,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
           isCompleted: tile.isCompleted,
           onChanged: (value) => checkBoxCheckChanged(value, index),
           deleteTask: (context) {
-            //deleteTask(index);
+            deleteTask(index);
           },
         );
       });
