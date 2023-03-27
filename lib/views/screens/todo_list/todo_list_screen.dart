@@ -1,5 +1,9 @@
 //Framework Imports
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:todolist/models/tiles/todo_tile_model.dart';
 
 //Project Imports
 import 'package:todolist/views/views.dart';
@@ -12,18 +16,24 @@ class ToDoListScreen extends StatefulWidget {
 }
 
 class _ToDoListScreenState extends State<ToDoListScreen> {
+  Future<List<ToDoTileModel>> todoList = getTasks();
+
+  static Future<List<ToDoTileModel>> getTasks() async {
+    const String url = 'https://jsonplaceholder.typicode.com/todos';
+    final response = await http.get(Uri.parse(url));
+    final body = json.decode(response.body);
+    // print(body);
+    return body.map<ToDoTileModel>(ToDoTileModel.fromJson).toList();
+  }
+
+  late List<ToDoTileModel> toDoTileModels;
+
   //Text Editing Controller
   TextEditingController textContoller = TextEditingController();
-  //List
-  List todoList = [
-    [1, 1, 'New Tile 1', true],
-    [1, 2, 'New Tile 2', false],
-    [1, 3, 'New Tile 3', true]
-  ];
 
   void checkBoxCheckChanged(bool? value, int index) {
     setState(() {
-      todoList[index][3] = !todoList[index][3];
+      toDoTileModels[index].isCompleted = !toDoTileModels[index].isCompleted;
     });
   }
 
@@ -42,9 +52,13 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   //Saves new task
   void onSave() {
     setState(() {
-      final todoListLength = todoList.length;
-      todoList
-          .add([todoList[0][0], todoListLength + 1, textContoller.text, false]);
+      final todoListLength = toDoTileModels.length;
+      final ToDoTileModel newTask = ToDoTileModel(
+          userId: toDoTileModels[0].userId,
+          id: todoListLength + 1,
+          titleName: textContoller.text,
+          isCompleted: false);
+      toDoTileModels.add(newTask);
       textContoller.clear();
     });
     Navigator.of(context).pop();
@@ -53,7 +67,8 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   //Deletes the task
   void deleteTask(int index) {
     setState(() {
-      todoList.removeAt(index);
+      // ignore: list_remove_unrelated_type
+      toDoTileModels.remove(index);
     });
   }
 
@@ -61,23 +76,18 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: const Text('ToDo List'),
       ),
-      body: ListView.builder(
-        itemCount: todoList.length,
-        itemBuilder: (context, index) {
-          return ToDoTile(
-            userId: todoList[index][0],
-            id: todoList[index][1],
-            titleName: todoList[index][2],
-            isCompleted: todoList[index][3],
-            onChanged: (value) => checkBoxCheckChanged(value, index),
-            deleteTask: (context) {
-              deleteTask(index);
-            },
-          );
+      body: FutureBuilder<List<ToDoTileModel>>(
+        future: todoList,
+        builder: (context, snapshot) {
+          final data = snapshot;
+          if (data.hasData) {
+            toDoTileModels = data.data!;
+            return buildTodoList(toDoTileModels);
+          } else {
+            return const Text('No user data');
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -87,4 +97,20 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       ),
     );
   }
+
+  Widget buildTodoList(List<ToDoTileModel> tasks) => ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final tile = tasks[index];
+        return ToDoTile(
+          userId: tile.userId,
+          id: tile.id,
+          titleName: tile.titleName,
+          isCompleted: tile.isCompleted,
+          onChanged: (value) => checkBoxCheckChanged(value, index),
+          deleteTask: (context) {
+            //deleteTask(index);
+          },
+        );
+      });
 }

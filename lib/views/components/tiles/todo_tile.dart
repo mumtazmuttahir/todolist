@@ -45,12 +45,15 @@ class ToDoTile extends StatelessWidget {
               //Checkbox
               Checkbox(value: isCompleted, onChanged: onChanged),
               //Task Name
-              Text(
-                titleName,
-                style: TextStyle(
-                    decoration: isCompleted
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none),
+              Flexible(
+                child: Text(
+                  titleName,
+                  maxLines: 2,
+                  style: TextStyle(
+                      decoration: isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none),
+                ),
               ),
             ],
           ),

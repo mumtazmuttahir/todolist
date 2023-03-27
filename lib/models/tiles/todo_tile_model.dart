@@ -10,19 +10,18 @@ class ToDoTileModel {
       required this.titleName,
       required this.isCompleted});
 
-  ToDoTileModel.fromJson(Map<String, dynamic> json) {
-    userId = json['userId'];
-    id = json['id'];
-    titleName = json['title'];
-    isCompleted = json['isCompleted'];
-  }
+  static ToDoTileModel fromJson(json) => ToDoTileModel(
+      userId: json['userId'],
+      id: json['id'],
+      titleName: json['title'],
+      isCompleted: json['completed']);
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userId'] = userId;
     data['id'] = id;
     data['title'] = titleName;
-    data['isCompleted'] = isCompleted;
+    data['completed'] = isCompleted;
 
     return data;
   }
