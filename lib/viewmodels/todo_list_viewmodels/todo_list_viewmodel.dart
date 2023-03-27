@@ -17,26 +17,29 @@ abstract class ViewModel with ChangeNotifier {
 }
 
 class ToDoListViewModel extends ViewModel {
-  // ToDoListViewModel(this.repo, {});
   late final ToDoListRepository repo;
 
   List<ToDoTileModel> get toDoTileModel => _toDoTileModel;
 
-  set toDoTileModel(List<ToDoTileModel> toDoTileModel) {
+  set setToDoTileModel(List<ToDoTileModel> toDoTileModel) {
     _toDoTileModel = toDoTileModel;
     notifyListeners();
   }
 
   @override
-  Future<void> fetchToDoListData() async {
+  Future<List<ToDoTileModel>> fetchToDoListData() async {
     try {
       isLoading = true;
-      _toDoTileModel = await repo.fetchTasksList();
+      var response = await repo.fetchTasksList();
+      // setToDoTileModel(response as List<ToDoTileModel>);
+
+      isLoading = false;
+      notifyListeners();
+      return response;
     } catch (exec) {
       print('Error in fetchToDoListData: ${exec.toString()}');
+      rethrow;
     }
-    isLoading = false;
-    notifyListeners();
   }
 
   //INTERNALS

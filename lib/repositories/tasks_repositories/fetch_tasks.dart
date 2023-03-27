@@ -15,7 +15,6 @@ class ToDoListRepositoryImplementation extends ToDoListRepository {
 
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
-      print(body);
       return body.map<ToDoTileModel>(ToDoTileModel.fromJson).toList();
     }
 

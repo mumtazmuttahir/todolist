@@ -86,7 +86,9 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             toDoTileModels = data.data!;
             return buildTodoList(toDoTileModels);
           } else {
-            return const Text('No user data');
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),
